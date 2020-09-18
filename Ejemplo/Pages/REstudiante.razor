@@ -1,0 +1,139 @@
+﻿@page "/REstudiante"
+
+@using Models
+@using BLL
+
+@inject IToastService toast
+
+
+<EditForm Model="Estudiante" OnInvalidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Registros</h3>
+        </div>
+        <div class="card-body">
+            <form>
+                <div class="form-row align-items-center">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Id:</label>
+                            <div class="input-group">
+                                <InputNumber @bind-Value="Estudiante.EstudianteId" class="form-control col-4" />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-primary input-group-text" @onclick="Buscar">Buscar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre:</label>
+                    <InputText @bind-Value="Estudiante.Nombre" class="form-control" />
+                    <ValidationMessage For="@(() => Estudiante.Nombre)" />
+                </div>
+
+
+                <div class="form-group">
+                    <label>Telefono:</label>
+                    <InputText @bind-Value="Estudiante.Telefono" class="form-control" />
+                    <ValidationMessage For="@(() => Estudiante.Telefono)" />
+                </div>
+
+                <div class="form-group">
+                    <label>Cedula:</label>
+                    <InputText @bind-Value="Estudiante.Cedula" class="form-control" />
+                    <ValidationMessage For="@(() => Estudiante.Cedula)" />
+                </div>
+
+                <div class="form-group">
+                    <label>Direccion:</label>
+                    <InputText @bind-Value="Estudiante.Direccion" class="form-control" />
+                    <ValidationMessage For="@(() => Estudiante.Direccion)" />
+                </div>
+
+                <div class="form-group">
+                    <label>Fecha de Nacimiento:</label>
+                    <InputDate @bind-Value="Estudiante.Fecha" class="form-control" />
+                    <ValidationMessage For="@(() => Estudiante.Fecha)" />
+                </div>
+
+
+
+            </form>
+        </div>
+        <div class="card-footer">
+            <div class="form-group text-center" display: inline-block>
+                <button type="button" class="btn btn-lg btn-primary" @onclick="Nuevo">Nuevo</button>
+                <button type="submit" class="btn btn-lg btn-success">Guardar</button>
+                <button type="button" class="btn btn-lg btn-danger" @onclick="Eliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <p />
+
+
+
+</EditForm>
+
+@code {
+
+    Estudiantes Estudiante = new Estudiantes();
+
+    protected override void OnInitialized()
+    {
+        Nuevo();
+    }
+
+    private void Nuevo()
+    {
+        Estudiante = new Estudiantes();
+    }
+
+    private void Guardar()
+    {
+        bool guardo;
+
+        guardo = EstuadiantesBLL.Guardar(Estudiante);
+
+        if (guardo)
+        {
+            Nuevo();
+            toast.ShowSuccess("Guardado correctamente");
+        }
+        else
+            toast.ShowError("No fue posible guardar");
+    }
+
+    private void Eliminar()
+    {
+        bool elimino;
+
+        elimino = EstuadiantesBLL.Eliminar(Estudiante.EstudianteId);
+
+        if (elimino)
+        {
+            Nuevo();
+            toast.ShowSuccess("Eliminado correctamente");
+        }
+        else
+            toast.ShowError("No fue posible eliminar");
+    }
+
+    private void Buscar()
+    {
+        if (Estudiante.EstudianteId > 0)
+        {
+            var encontrado = EstuadiantesBLL.Buscar(Estudiante.EstudianteId);
+
+            if (encontrado != null)
+                this.Estudiante = encontrado;
+            else
+                toast.ShowWarning("No encontrado");
+        }
+    }
+
+}
